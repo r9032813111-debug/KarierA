@@ -1,0 +1,94 @@
+# Hardware profile copied from Comp_Vision/vision_mvp/config.yaml.
+# Calibration timings and heading offset are intentionally preserved.
+hardware_enabled: true
+simulation_when_offline: false
+
+# -1 = find the first available camera automatically.  The backend tries
+# indices 0 through camera_scan_limit - 1 and reconnects if the camera drops.
+camera_index: -1
+camera_backend: CAP_DSHOW
+camera_scan_limit: 6
+frame_width: 1280
+frame_height: 720
+stream_width: 960
+stream_height: 640
+stream_jpeg_quality: 78
+stream_fps: 20
+
+# WEB3 Stereo: the V10 runtime owns both cameras. Its left frame is also fed
+# into the existing ArUco/robot pipeline, so every old interface feature keeps
+# working without opening the same camera twice.
+stereo_enabled: true
+stereo_left_camera_index: 0
+stereo_right_camera_index: 1
+stereo_camera_scan_limit: 8
+stereo_camera_backend: dshow
+stereo_frame_width: 1920
+stereo_frame_height: 1080
+stereo_grid_size: 150
+stereo_min_distance_mm: 20.0
+stereo_max_distance_mm: 6670.0
+stereo_z_scale: 2.1
+stereo_plane_width_mm: 2000.0
+stereo_z_smoothing: 1.0
+stereo_matcher: sgbm
+stereo_min_disparity: 2
+stereo_num_disparities: 192
+stereo_block_size: 15
+stereo_jpeg_quality: 78
+
+aruco_dictionary: DICT_4X4_100
+marker_size_cm: 6.0
+# Hold a marker's last geometry through a short recognition loss. This keeps
+# the crop and robot pose stable when a single frame misses an ArUco marker.
+marker_hold_seconds: 1.0
+# No ArUco ID is hard-wired to the ESP32. The operator selects the active
+# agent in the web interface; that marker then becomes the control pose.
+controlled_agent_id: null
+# The upper edge of an ArUco marker is the robot front. Individual agents can
+# apply a saved correction in the UI from -180° to +180°.
+robot_heading_offset_deg: 0.0
+
+robot_transport: wifi
+# ESP32 boards join the local Wi-Fi network. Each agent's own LAN IP is saved
+# in the ArUco marker settings; this fallback is intentionally empty.
+robot_wifi_host: ""
+robot_wifi_port: 3333
+serial_port: COM6
+serial_baud: 115200
+
+navigation_inset_cm: 15.0
+hard_stop_margin_cm: 7.0
+target_tolerance_cm: 3.0
+heading_tolerance_deg: 12.0
+# PD trajectory regulator defaults. Values can be overridden per agent in UI.
+heading_kp: 1.8
+heading_kd: 0.18
+# PWM used for smooth PD movement after the robot has aligned to its target.
+min_drive_pwm: 80
+# Above this heading error the robot turns on the spot with both motors.
+in_place_turn_threshold_deg: 90.0
+# Electrical ESP channels are installed on the opposite physical sides. The
+# server swaps outgoing commands and incoming PWM feedback consistently.
+invert_turn_direction: true
+# Calibration is intentionally disabled: movement is controlled directly by PD.
+auto_calibrate: false
+# Safety action after the smoothed position has not progressed in time.
+stuck_action: stop
+stuck_boost_pwm: 35
+arc_turn_single_motor: true
+# Mark the route as stuck when filtered position does not advance while the
+# controller commands FORWARD for this long.
+stuck_timeout_s: 2.5
+stuck_min_progress_cm: 1.5
+pose_smoothing_alpha: 0.25
+robot_speed: 255
+debug_work_clearance_percent: 1.4
+# TCP already retransmits lost Wi-Fi packets. 50 Hz keeps the command fresh
+# without building a queue that could delay an emergency STOP.
+serial_command_interval_s: 0.02
+
+# Legacy calibration timings are kept only for compatibility.
+calibration_forward_seconds: 2.0
+calibration_turn_90_seconds: 1.0
+calibration_turn_180_seconds: 2.0

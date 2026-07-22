@@ -1,0 +1,8 @@
+fastapi==0.115.12
+uvicorn[standard]==0.34.2
+numpy==1.26.4
+opencv-contrib-python==4.11.0.86
+PyYAML==6.0.2
+pyserial==3.5
+pyvista>=0.48.0
+pygame>=2.6.0

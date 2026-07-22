@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Build and runtime artifacts
+.pio/
+*.log
+calibration_backups/
+*-preview.png
+
+# Machine-specific runtime state
+/configuration.json
+/regions.json
+/controller_settings.json
+/servo_settings.json
+/stereo_settings.json
+
+# Local firmware credentials (copy the tracked example first)
+/firmware/esp32/include/wifi_credentials.h

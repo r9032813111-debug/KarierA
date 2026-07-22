@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f2f3ed">
+  <title>КарьерА WEB3 Stereo — управление полем</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/styles.css?v=20260722-25">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="КарьерА">
+        <span class="brand-mark"><i></i><i></i><i></i></span>
+        <span class="brand-copy"><strong>КАРЬЕРА</strong><small>WEB3 STEREO</small></span>
+      </a>
+      <nav class="main-nav" aria-label="Основная навигация">
+        <button class="nav-item active" data-page="map">Карта</button>
+        <button class="nav-item" data-page="markers">Метки <span class="nav-count" id="marker-count">0</span></button>
+        <button class="nav-item" data-page="stereo">СТЕРЕО <span class="stereo-live-dot" id="stereo-nav-dot"></span></button>
+      </nav>
+      <div class="system-cluster">
+        <label class="debug-toggle" id="debug-toggle" title="Показывать маршрут и задавать скорость робота">
+          <input type="checkbox" id="debug-mode-toggle">
+          <span class="debug-switch" aria-hidden="true"><i></i></span>
+          <span class="debug-toggle-copy"><b>ОТЛАДКА</b><small>маршрут и скорость</small></span>
+        </label>
+        <div class="camera-pill" id="camera-pill"><span class="signal-bars"><i></i><i></i><i></i></span><span id="camera-name">Камера 01</span><b id="camera-state">OFFLINE</b></div>
+        <button class="icon-button" id="sound-button" title="Звук уведомлений" aria-label="Звук уведомлений">
+          <svg viewBox="0 0 24 24"><path d="M11 5 6.5 9H3v6h3.5l4.5 4V5Zm4.5 4a4.5 4.5 0 0 1 0 6M18 6a8.5 8.5 0 0 1 0 12"/></svg>
+        </button>
+        <button class="icon-button" id="interface-settings-button" title="Настройки интерфейса" aria-label="Настройки интерфейса">
+          <svg viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm0-5 1.2 2.3 2.6.7 2.1-1.2 1.8 1.8-1.2 2.1.7 2.6 2.3 1.2v2.6l-2.3 1.2-.7 2.6 1.2 2.1-1.8 1.8-2.1-1.2-2.6.7L12 20.5H9.4l-1.2-2.3-2.6-.7-2.1 1.2-1.8-1.8 1.2-2.1-.7-2.6L0 11V8.4l2.2-1.2.7-2.6-1.2-2.1L3.5.7l2.1 1.2 2.6-.7L9.4-1h2.6"/></svg>
+        </button>
+        <div class="clock"><strong id="clock-time">14:32:08</strong><span id="clock-date">11 июля 2026</span></div>
+      </div>
+    </header>
+
+    <main>
+      <section class="page map-page active" id="map-page">
+        <div class="map-layout">
+          <aside class="agent-panel panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">ФЛОТ</span><h2>Агенты</h2></div>
+              <span class="round-counter" id="agent-count">0</span>
+            </div>
+            <div class="agent-list" id="agent-list"></div>
+            <div class="panel-footnote"><span class="live-dot"></span>Позиции обновляются в реальном времени</div>
+          </aside>
+
+          <section class="field-section">
+            <div class="field-toolbar">
+              <div>
+                <span class="eyebrow">ПОЛЕ 01 / ОСНОВНОЕ</span>
+                <h1>Карта операций</h1>
+              </div>
+              <div class="toolbar-actions">
+                <div class="scale-readout"><span>МАСШТАБ</span><b id="zoom-value">100%</b></div>
+                <button class="tool-button" id="zoom-out" aria-label="Уменьшить">−</button>
+                <button class="tool-button" id="zoom-in" aria-label="Увеличить">+</button>
+                <button class="tool-button fit-button" id="fit-map" aria-label="Вписать карту">
+                  <svg viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>
+                </button>
+                <button class="camera-toggle" id="camera-toggle" aria-label="Показать или скрыть камеру"><span></span> ВИДЕО</button>
+              </div>
+            </div>
+
+            <div class="map-card" id="map-card">
+              <img class="camera-feed" id="camera-feed" alt="Видеопоток реального ArUco-поля">
+              <svg class="field-map" id="field-map" viewBox="0 0 1000 680" role="application" aria-label="Интерактивная карта поля">
+                <defs>
+                  <pattern id="micro-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+                    <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#1d2c20" stroke-opacity=".055" stroke-width="1"/>
+                  </pattern>
+                  <pattern id="major-grid" width="120" height="120" patternUnits="userSpaceOnUse">
+                    <rect width="120" height="120" fill="url(#micro-grid)"/>
+                    <path d="M 120 0 L 0 0 0 120" fill="none" stroke="#1d2c20" stroke-opacity=".08" stroke-width="1"/>
+                  </pattern>
+                  <filter id="agent-shadow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feDropShadow dx="0" dy="5" stdDeviation="6" flood-color="#1b251d" flood-opacity=".22"/>
+                  </filter>
+                  <marker id="debug-arrow" markerWidth="12" markerHeight="12" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L10,5 L0,10 Z" fill="#d84a3d"/>
+                  </marker>
+                  <clipPath id="field-clip"><polygon id="field-clip-polygon" points="80,80 920,68 960,570 120,610"/></clipPath>
+                </defs>
+                <rect width="1000" height="680" fill="#e8e9df"/>
+                <g clip-path="url(#field-clip)">
+                  <rect width="1000" height="680" fill="#dfe1d5"/>
+                  <rect width="1000" height="680" fill="url(#major-grid)"/>
+                  <path class="terrain-path" d="M-40 518 C145 460 240 555 380 492 S650 397 805 474 1050 398 1090 350"/>
+                  <path class="terrain-path thin" d="M-20 555 C170 490 265 590 405 524 S665 428 824 506 1040 438 1080 390"/>
+                  <g class="map-labels">
+                    <text x="510" y="160">СЕКТОР A</text>
+                    <text x="510" y="570">СЕКТОР B</text>
+                  </g>
+                </g>
+                <polygon id="field-polygon" points="80,80 920,68 960,570 120,610"/>
+                <g id="region-layer"></g>
+                <g id="region-preview-layer"></g>
+                <g id="route-layer"></g>
+                <g id="marker-layer"></g>
+                <g id="agent-layer"></g>
+              </svg>
+              <div class="region-draw-hint" id="region-draw-hint"><span>＋</span><div><b id="region-hint-title">Нарисуйте область</b><small>Зажмите и протяните курсор по полю · Esc — отмена</small></div></div>
+              <div class="map-compass"><b>N</b><i></i></div>
+              <div class="map-legend"><span><i class="legend-agent"></i>Агент</span><span><i class="legend-target"></i>Точка назначения</span><span><i class="legend-boundary"></i>Граница ArUco</span></div>
+              <div class="coordinates" id="coordinates">X 0.0&nbsp;&nbsp; Y 0.0</div>
+              <div class="camera-offline" id="camera-offline"><span>◉</span><div><b>Камера не подключена</b><small>Ожидаю видеосигнал на входе 01</small></div></div>
+              <div class="instruction-toast" id="instruction-toast">
+                <span class="toast-icon">⌖</span>
+                <div><b>Укажите точку назначения</b><span>Кликните в пределах поля или нажмите Esc</span></div>
+              </div>
+            </div>
+          </section>
+
+          <aside class="mission-panel panel">
+            <div class="panel-heading compact"><div><span class="eyebrow">ЗАДАНИЕ</span><h2>Управление</h2></div></div>
+            <div class="hardware-status">
+              <div><span>КАМЕРА</span><b id="hardware-camera">OFFLINE</b></div>
+              <div><span>РОБОТ</span><b id="hardware-robot">НЕТ СВЯЗИ</b></div>
+              <div class="calibration-row"><span>ЭТАП</span><b id="calibration-phase">WAIT_FIELD</b></div>
+            </div>
+            <div class="region-editor" id="region-editor">
+              <div class="region-editor-head">
+                <div><span>РАЗМЕТКА</span><b>Области поля</b></div>
+                <button id="region-mode-close" aria-label="Закончить рисование">×</button>
+              </div>
+              <div class="region-buttons">
+                <button data-region-type="quarry"><i></i><span><b>Карьер</b><small>Зона добычи</small></span></button>
+                <button data-region-type="storage"><i></i><span><b>Хранилище</b><small>Склад материала</small></span></button>
+                <button data-region-type="work"><i></i><span><b>Рабочая</b><small>Зона операций</small></span></button>
+              </div>
+              <div class="region-list-head"><span>СОЗДАНО</span><b id="region-count">0</b></div>
+              <div class="region-list" id="region-list"><p>Областей пока нет</p></div>
+            </div>
+            <div class="empty-mission" id="empty-mission">
+              <div class="empty-radar"><i></i><i></i><span>+</span></div>
+              <h3>Выберите агента</h3>
+              <p>Нажмите на агента в списке или прямо на карте, чтобы создать задание.</p>
+            </div>
+            <div class="mission-details" id="mission-details" hidden>
+              <div class="selected-agent-card">
+                <div class="agent-avatar large" id="mission-icon"></div>
+                <div><span>ВЫБРАН</span><strong id="mission-name">—</strong><small id="mission-id">—</small></div>
+                <button class="close-selection" id="close-selection" aria-label="Отменить выбор">×</button>
+              </div>
+              <div class="telemetry-grid">
+                <div><span>СТАТУС</span><b id="mission-status">Готов</b></div>
+                <div><span>ЗАРЯД</span><b id="mission-battery">—</b></div>
+                <div><span>КООРДИНАТЫ</span><b id="mission-coords">—</b></div>
+                <div><span>КУРС</span><b id="mission-heading">—</b></div>
+              </div>
+              <section class="motor-output" aria-label="Тяга моторов">
+                <div class="motor-output-head"><span>ШИМ: СЕРВЕР → ESP</span><b id="motor-command">STOP</b></div>
+                <div class="motor-row"><span>ЛЕВЫЙ</span><div class="motor-track"><i id="motor-left-fill"></i></div><b id="motor-left-value">0%</b></div>
+                <div class="motor-row"><span>ПРАВЫЙ</span><div class="motor-track"><i id="motor-right-fill"></i></div><b id="motor-right-value">0%</b></div>
+              </section>
+              <details class="servo-settings" id="servo-settings">
+                <summary>Сервоприводы навесного оборудования</summary>
+                <p>Пределы сохраняются отдельно для каждого агента. ESP показывает подтверждённый заданный угол.</p>
+                <div id="servo-channels"></div>
+                <button class="secondary-action" id="save-servo-settings" type="button">Сохранить пределы</button>
+              </details>
+              <section class="manual-controls" id="manual-controls" hidden>
+                <div class="manual-controls-head"><span>РУЧНОЕ УПРАВЛЕНИЕ</span><b>W / A / S / D</b></div>
+                <p>Работает без камеры и ArUco. Удерживайте W/A/S/D; сочетание направления и поворота включает только один мотор.</p>
+                <div class="wasd-pad">
+                  <button type="button" data-manual-direction="forward" aria-label="Вперёд">W<small>вперёд</small></button>
+                  <button type="button" data-manual-direction="left" aria-label="Влево">A<small>влево</small></button>
+                  <button type="button" data-manual-direction="backward" aria-label="Назад">S<small>назад</small></button>
+                  <button type="button" data-manual-direction="right" aria-label="Вправо">D<small>вправо</small></button>
+                </div>
+                <span class="manual-deadman">Отпустили клавишу — моторы остановлены</span>
+              </section>
+              <div class="mission-step" id="target-mission-step">
+                <span class="step-number">01</span><div><b>Точка назначения</b><p id="target-copy">Укажите точку на карте</p></div>
+              </div>
+              <div class="debug-controls" id="debug-controls" hidden>
+                <div class="debug-controls-head">
+                  <div><span>РЕЖИМ ОТЛАДКИ</span><b>Скорость робота</b></div>
+                  <output id="debug-speed-value" for="debug-speed">120</output>
+                </div>
+                <input type="range" id="debug-speed" min="0" max="250" step="1" value="120">
+                <div class="debug-speed-scale"><span>0 · стоп</span><span>250 · максимум</span></div>
+                <p><i></i>Маршрут строится только по рабочим областям и обходит их границы.</p>
+              </div>
+              <details class="controller-settings" id="controller-settings">
+                <summary>Настройки регулятора движения</summary>
+                <p>Сохраняются отдельно для выбранного агента.</p>
+                <label>Максимальная скорость <output id="controller-speed-value">120</output><input id="controller-speed" type="range" min="0" max="250" step="1" value="120"></label>
+                <label>Точность остановки, см <input id="controller-target-tolerance" type="number" min="1" max="20" step="0.5" value="3"></label>
+                <label>Допуск по курсу, ° <input id="controller-heading-tolerance" type="number" min="1" max="90" step="1" value="12"></label>
+                <label>Коэффициент P <input id="controller-heading-kp" type="number" min="-10" max="10" step="0.1" value="1.8"></label>
+                <label>Коэффициент D <input id="controller-heading-kd" type="number" min="0" max="5" step="0.01" value="0.18"></label>
+                <label>Минимальный ШИМ движения <input id="controller-min-drive-pwm" type="number" min="0" max="250" step="1" value="80"></label>
+                <label>Поворот на месте при ошибке, ° <input id="controller-in-place-turn-threshold" type="number" min="1" max="180" step="1" value="90"></label>
+                <label>Оффсет направления, ° <input id="controller-heading-offset" type="number" min="-180" max="180" step="1" value="0"></label>
+                <label class="controller-check"><span>Инвертировать левый мотор ESP</span><input id="controller-left-motor-inverted" type="checkbox"></label>
+                <label class="controller-check"><span>Инвертировать правый мотор ESP</span><input id="controller-right-motor-inverted" type="checkbox"></label>
+                <label>Время до «Застрял», с <input id="controller-stuck-timeout" type="number" min="0.5" max="30" step="0.5" value="2.5"></label>
+                <label>Минимальный прогресс, см <input id="controller-stuck-progress" type="number" min="0.1" max="20" step="0.1" value="1.5"></label>
+                <label>Действие при застревании
+                  <select id="controller-stuck-action">
+                    <option value="stop">Отключить моторы</option>
+                    <option value="boost">Повысить ШИМ и продолжить</option>
+                    <option value="continue">Ничего не делать</option>
+                  </select>
+                </label>
+                <label>Добавка ШИМ, при повышении <input id="controller-stuck-boost" type="number" min="1" max="150" step="1" value="35"></label>
+                <button class="secondary-action" id="stuck-boost-toggle" type="button">Повышение ШИМ при застревании: выкл</button>
+                <button class="secondary-action" id="save-controller-settings" type="button">Сохранить настройки</button>
+              </details>
+              <button class="primary-action" id="select-target-button"><span>⌖</span> Выбрать на карте</button>
+              <button class="secondary-action resume-button" id="resume-stop" type="button" hidden>Снять аварийную остановку</button>
+              <button class="secondary-action resume-button" id="clear-stuck" type="button" hidden>Снять состояние «Застрял»</button>
+              <button class="emergency-button" id="emergency-stop"><i></i> АВАРИЙНАЯ ОСТАНОВКА</button>
+              <div class="command-log" id="command-log"><span class="log-dot"></span><p>Агент готов к приёму команд</p></div>
+            </div>
+          </aside>
+        </div>
+        <footer class="status-bar">
+          <span><i class="status-ok" id="system-indicator"></i><span id="system-copy">Ожидание камеры</span></span>
+          <span>WebSocket <b id="ws-status">подключение…</b></span>
+          <span>Задержка <b id="latency">—</b></span>
+          <span class="version">КАРЬЕРА WEB3 STEREO</span>
+        </footer>
+      </section>
+
+      <section class="page markers-page" id="markers-page">
+        <div class="settings-wrap">
+          <div class="settings-head">
+            <div><span class="eyebrow">КОНФИГУРАЦИЯ ПОЛЯ</span><h1>Назначение ArUco-меток</h1><p>Определите роль каждой распознанной камерой метки. Границы поля строятся автоматически.</p></div>
+            <div class="scan-status"><span class="scan-rings"><i></i></span><div><b>Камера активна</b><small id="scan-copy">Распознано 0 меток</small></div></div>
+          </div>
+          <div class="settings-stats">
+            <div><span>РАСПОЗНАНО</span><b id="stat-total">0</b><small>меток в кадре</small></div>
+            <div><span>ГРАНИЦА ПОЛЯ</span><b id="stat-field">0 / 8</b><small>вершины и рёбра</small></div>
+            <div><span>АГЕНТЫ</span><b id="stat-agents">0</b><small>назначено роботов</small></div>
+            <div><span>БЕЗ РОЛИ</span><b id="stat-unassigned">0</b><small>требуют внимания</small></div>
+          </div>
+          <div class="manual-agent-creator">
+            <div><span class="eyebrow">БЕЗ КАМЕРЫ И МЕТКИ</span><b>Добавить робота для управления W/A/S/D</b><small>Нужен только IP-адрес ESP32 в локальной сети.</small></div>
+            <input id="manual-agent-name" type="text" maxlength="48" placeholder="Имя робота">
+            <select id="manual-agent-type">
+              <option value="loader">Погрузчик</option>
+              <option value="bulldozer">Бульдозер</option>
+              <option value="dumper">Самосвал</option>
+            </select>
+            <input id="manual-agent-ip" type="text" inputmode="decimal" maxlength="45" placeholder="192.168.1.50">
+            <button class="primary-action" id="add-manual-agent" type="button">+ ДОБАВИТЬ БЕЗ ARUCO</button>
+          </div>
+          <div class="marker-table-wrap">
+            <table class="marker-table">
+              <thead><tr><th>МЕТКА</th><th>КООРДИНАТЫ</th><th>НАЗНАЧЕНИЕ</th><th>ТИП АГЕНТА</th><th>ИМЯ АГЕНТА</th><th>IP АГЕНТА</th><th>СИГНАЛ</th></tr></thead>
+              <tbody id="marker-table-body"></tbody>
+            </table>
+          </div>
+          <div class="settings-footer">
+            <p><span>i</span> Для построения полигона назначьте минимум 3 вершины. Порядок определяется по координатам.</p>
+            <div><button class="secondary-action" id="reset-config">Сбросить</button><button class="primary-action save-button" id="save-config">Сохранить конфигурацию</button></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page stereo-page" id="stereo-page">
+        <div class="stereo-toolbar">
+          <div><span class="eyebrow">RGBD / STEREO V10</span><h1>Карта стереозрения</h1></div>
+          <div class="stereo-actions">
+            <span class="stereo-status" id="stereo-status"><i></i><b>ОЖИДАНИЕ КАМЕР</b><small id="stereo-fps">—</small></span>
+            <button class="stereo-mode active" data-stereo-mode="3d_aruco" type="button">3D ARUCO</button>
+            <button class="stereo-mode" data-stereo-mode="3d_full" type="button">3D БЕЗ МЕТОК</button>
+            <button class="stereo-mode" data-stereo-mode="rgbd" type="button">RGBD 2D</button>
+            <button class="stereo-mode stereo-superfast" data-stereo-mode="superfast" type="button">SUPERFAST 2D</button>
+            <button class="tool-button" id="stereo-settings-toggle" type="button" title="Настройки RGBD">⚙</button>
+            <button class="tool-button" id="stereo-reset" type="button" title="Сбросить положение камеры">↺</button>
+          </div>
+        </div>
+        <div class="stereo-stage" id="stereo-stage">
+          <canvas id="stereo-canvas" aria-label="Интерактивная трёхмерная карта местности"></canvas>
+          <img id="stereo-2d-frame" class="stereo-2d-frame hidden" alt="Двумерная RGBD-карта">
+          <div class="stereo-texture-switch" id="stereo-texture-switch">
+            <button class="stereo-mode active" id="stereo-rgb" type="button">RGB-ТЕКСТУРА</button>
+            <button class="stereo-mode" id="stereo-topology" type="button">ТОПОЛОГИЯ</button>
+          </div>
+          <div class="stereo-wait" id="stereo-wait"><span>3D</span><b>ПОСТРОЕНИЕ СТЕРЕОКАРТЫ</b><small id="stereo-error">Подключите две камеры 0 и 1</small></div>
+          <div class="stereo-help">ЛКМ — вращение · колесо — масштаб · двойной клик — сброс</div>
+          <div class="stereo-roi" id="stereo-roi">ARUCO ROI: ОЖИДАНИЕ</div>
+          <aside class="stereo-settings-panel" id="stereo-settings-panel" aria-hidden="true">
+            <div class="stereo-settings-head"><div><span class="eyebrow">V10 ORIGINAL</span><h2>Настройки RGBD</h2></div><button type="button" id="stereo-settings-close">×</button></div>
+            <div class="stereo-settings-scroll">
+              <h3>Геометрия и дистанция</h3>
+              <div class="stereo-settings-grid">
+                <label>Сетка <input data-stereo-setting="grid_size" type="number" min="10" max="300" step="1"></label>
+                <label>Масштаб Z <input data-stereo-setting="z_scale" type="number" min="0.1" max="10" step="0.1"></label>
+                <label>Ширина плоскости, мм <input data-stereo-setting="plane_width_mm" type="number" min="100" max="10000" step="10"></label>
+                <label>Мин. дистанция, мм <input data-stereo-setting="min_distance_mm" type="number" min="0" max="20000" step="10"></label>
+                <label>Макс. дистанция, мм <input data-stereo-setting="max_distance_mm" type="number" min="10" max="20000" step="10"></label>
+                <label>Сглаживание Z <input data-stereo-setting="z_smoothing" type="number" min="0" max="5" step="0.1"></label>
+                <label>Масштаб расчёта <input data-stereo-setting="processing_scale" type="number" min="0.25" max="1" step="0.05"></label>
+                <label>JPEG, качество <input data-stereo-setting="jpeg_quality" type="number" min="40" max="95" step="1"></label>
+              </div>
+              <h3>Фильтры глубины</h3>
+              <div class="stereo-check-grid">
+                <label><input data-stereo-setting="filters_enabled" type="checkbox"> Все фильтры</label>
+                <label><input data-stereo-setting="gradient_fill" type="checkbox"> Заполнение разрывов</label>
+                <label><input data-stereo-setting="median_filter" type="checkbox"> Медианный фильтр</label>
+                <label><input data-stereo-setting="bilateral_filter" type="checkbox"> Билатеральный</label>
+                <label><input data-stereo-setting="speckle_filter" type="checkbox"> Удаление пятен</label>
+                <label><input data-stereo-setting="morphological_fill" type="checkbox"> Морф. заполнение</label>
+                <label><input data-stereo-setting="contour_fill" type="checkbox"> Контурное заполнение</label>
+                <label><input data-stereo-setting="white_points" type="checkbox"> Белые точки</label>
+                <label><input data-stereo-setting="swap_cameras" type="checkbox"> Левая ↔ правая камера</label>
+              </div>
+              <div class="stereo-settings-grid">
+                <label>Inpaint, радиус <input data-stereo-setting="inpaint_radius" type="number" min="0" max="10" step="0.1"></label>
+                <label>Median kernel <input data-stereo-setting="median_kernel" type="number" min="3" max="15" step="2"></label>
+                <label>Bilateral diameter <input data-stereo-setting="bilateral_diameter" type="number" min="1" max="25" step="2"></label>
+                <label>Bilateral color <input data-stereo-setting="bilateral_sigma_color" type="number" min="0" max="100" step="1"></label>
+                <label>Bilateral space <input data-stereo-setting="bilateral_sigma_space" type="number" min="0" max="100" step="1"></label>
+                <label>Размер пятна, px <input data-stereo-setting="speckle_area_px" type="number" min="0" max="2000" step="10"></label>
+                <label>Morph kernel <input data-stereo-setting="morphological_kernel" type="number" min="1" max="15" step="2"></label>
+                <label>Макс. дыра, px <input data-stereo-setting="max_hole_area_px" type="number" min="0" max="200000" step="100"></label>
+              </div>
+              <h3>V9/V10 и SUPERFAST</h3>
+              <div class="stereo-settings-grid">
+                <label>Median area, px <input data-stereo-setting="median_area_px" type="number" min="3" max="400" step="1"></label>
+                <label>Выброс, см <input data-stereo-setting="outlier_cm" type="number" min="0.1" max="200" step="0.1"></label>
+                <label>Контуры топологии, см <input data-stereo-setting="topology_contour_cm" type="number" min="0" max="200" step="1"></label>
+                <label>SUPERFAST ширина <input data-stereo-setting="superfast_width" type="number" min="160" max="960" step="16"></label>
+                <label>SUPERFAST disparities <input data-stereo-setting="superfast_disparities" type="number" min="16" max="160" step="16"></label>
+                <label>SUPERFAST block <input data-stereo-setting="superfast_block_size" type="number" min="5" max="31" step="2"></label>
+              </div>
+            </div>
+            <div class="stereo-settings-actions"><button type="button" class="secondary-action" id="stereo-settings-reload">Отменить</button><button type="button" class="primary-action" id="stereo-settings-save">Сохранить</button></div>
+          </aside>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div class="interface-settings-overlay" id="interface-settings-overlay" hidden>
+    <aside class="interface-settings-panel" role="dialog" aria-modal="true" aria-labelledby="interface-settings-title">
+      <div class="interface-settings-head">
+        <div><span class="eyebrow">ПОЛЬЗОВАТЕЛЬСКИЙ ИНТЕРФЕЙС</span><h2 id="interface-settings-title">Настройки интерфейса</h2></div>
+        <button type="button" id="interface-settings-close" aria-label="Закрыть">×</button>
+      </div>
+      <div class="interface-settings-body">
+        <label class="interface-setting-check"><span><b>Показывать уведомления</b><small>Всплывающие сообщения о командах и ошибках</small></span><input id="interface-notifications-enabled" type="checkbox" checked></label>
+        <label class="interface-setting-check"><span><b>Звук уведомлений</b><small>Короткий сигнал при появлении сообщения</small></span><input id="interface-sound-enabled" type="checkbox" checked></label>
+        <label class="interface-setting-range"><span><b>Масштаб интерфейса</b><output id="interface-scale-value">100%</output></span><input id="interface-scale" type="range" min="80" max="120" step="5" value="100"><small>Увеличивает или уменьшает все панели сайта</small></label>
+        <label class="interface-setting-number"><span><b>Время скрытия уведомлений</b><small>Через сколько секунд сообщение исчезнет</small></span><span><input id="interface-notification-duration" type="number" min="0.5" max="30" step="0.5" value="3.5"><i>сек.</i></span></label>
+      </div>
+      <div class="interface-settings-actions">
+        <button type="button" class="secondary-action" id="interface-settings-reset">По умолчанию</button>
+        <button type="button" class="primary-action" id="interface-settings-save">Сохранить</button>
+      </div>
+    </aside>
+  </div>
+  <div class="notification-stack" id="notifications"></div>
+  <script src="/assets/stereo.js?v=20260722-05"></script>
+  <script src="/assets/app.js?v=20260722-12"></script>
+</body>
+</html>

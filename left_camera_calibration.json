@@ -1,0 +1,119 @@
+{
+  "os": "Windows-11-10.0.26100-SP0",
+  "python": "3.13.4",
+  "opencv": "4.13.0",
+  "backend": "dshow",
+  "left_camera_index": 0,
+  "right_camera_index": 1,
+  "image_size": {
+    "width": 1920,
+    "height": 1080
+  },
+  "resolution": {
+    "width": 1920,
+    "height": 1080
+  },
+  "requested_resolution": {
+    "width": 1920,
+    "height": 1080
+  },
+  "requested_fps": 30,
+  "left_actual_fps": 30.00003000003,
+  "right_actual_fps": 30.00003000003,
+  "left_actual_resolution": {
+    "width": 1920,
+    "height": 1080
+  },
+  "right_actual_resolution": {
+    "width": 1920,
+    "height": 1080
+  },
+  "chessboard_inner_corners": {
+    "cols": 7,
+    "rows": 6
+  },
+  "square_size_mm": 22.8125,
+  "workflow": "full_calibrate_v2_single_capture_set",
+  "calibration_logical_cpu_budget": 16,
+  "mono_parallel_jobs": 2,
+  "mono_threads_per_job": 8,
+  "timestamp": "2026-07-22T17:05:09",
+  "calibration_mode": "dual_camera_mono",
+  "camera_side": "left",
+  "calibration_model": "pinhole",
+  "camera_matrix": [
+    [
+      1370.0510833153076,
+      0.0,
+      980.6752423572567
+    ],
+    [
+      0.0,
+      1369.4537284848093,
+      548.1717022959577
+    ],
+    [
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "distortion_coefficients": [
+    [
+      -0.06398546822899931,
+      1.2707749269765047,
+      -0.005138385755047654,
+      -0.006569083885026493,
+      -7.972049858362003
+    ]
+  ],
+  "rms_reprojection_error": 0.07807558690173465,
+  "per_sample_reprojection_errors": [
+    0.0719340027862532,
+    0.07286775854078674,
+    0.09703336362267664,
+    0.08158118291000833,
+    0.07525759225116058,
+    0.07451603978178184,
+    0.07243966473496288,
+    0.0814707397805547,
+    0.06876384099850143,
+    0.06093790171505958,
+    0.06987320515886132,
+    0.08243125767368456,
+    0.08321557743862885,
+    0.09215853754162485,
+    0.07900486720477073
+  ],
+  "number_of_samples": 15,
+  "removed_bad_samples": 26,
+  "rejected_sample_indices": [
+    26,
+    25,
+    37,
+    35,
+    36,
+    8,
+    10,
+    9,
+    2,
+    31,
+    30,
+    3,
+    7,
+    5,
+    4,
+    6,
+    23,
+    22,
+    21,
+    24,
+    18,
+    20,
+    19,
+    11,
+    13,
+    14
+  ],
+  "opencv_calibration_flags": 0
+}

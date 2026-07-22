@@ -1,0 +1,99 @@
+os: Windows-11-10.0.26100-SP0
+python: 3.13.4
+opencv: 4.13.0
+backend: dshow
+left_camera_index: 0
+right_camera_index: 1
+image_size:
+  width: 1920
+  height: 1080
+resolution:
+  width: 1920
+  height: 1080
+requested_resolution:
+  width: 1920
+  height: 1080
+requested_fps: 30
+left_actual_fps: 30.00003000003
+right_actual_fps: 30.00003000003
+left_actual_resolution:
+  width: 1920
+  height: 1080
+right_actual_resolution:
+  width: 1920
+  height: 1080
+chessboard_inner_corners:
+  cols: 7
+  rows: 6
+square_size_mm: 22.8125
+workflow: full_calibrate_v2_single_capture_set
+calibration_logical_cpu_budget: 16
+mono_parallel_jobs: 2
+mono_threads_per_job: 8
+timestamp: '2026-07-22T17:05:09'
+calibration_mode: dual_camera_mono
+camera_side: right
+calibration_model: pinhole
+camera_matrix:
+- - 1325.897152412509
+  - 0.0
+  - 984.6581957144425
+- - 0.0
+  - 1326.1769533092092
+  - 555.2433746207504
+- - 0.0
+  - 0.0
+  - 1.0
+distortion_coefficients:
+- - -0.01112748901683213
+  - 0.3533651880214635
+  - -0.00044756790400209866
+  - -0.006959988307598281
+  - -4.160650918629713
+rms_reprojection_error: 0.08099447999694735
+per_sample_reprojection_errors:
+- 0.07796753429170737
+- 0.0762261210919258
+- 0.09485621748430378
+- 0.08816583073614254
+- 0.08405779589555973
+- 0.08489247660780684
+- 0.07311227630417684
+- 0.08064438045253429
+- 0.0769628191100822
+- 0.0779757090457974
+- 0.07887373201909549
+- 0.07627125266330302
+- 0.07887101650243926
+- 0.07660558387792547
+- 0.08654217634490009
+number_of_samples: 15
+removed_bad_samples: 26
+rejected_sample_indices:
+- 26
+- 25
+- 37
+- 35
+- 36
+- 8
+- 10
+- 9
+- 2
+- 31
+- 30
+- 3
+- 7
+- 5
+- 4
+- 6
+- 23
+- 22
+- 21
+- 24
+- 18
+- 20
+- 19
+- 11
+- 13
+- 14
+opencv_calibration_flags: 0
