@@ -18,7 +18,7 @@ echo.
 echo Board: 7 x 6 inner corners, 8 x 7 squares, square size 22.8125 mm.
 echo C = capture pair, SPACE = calculate and save, R = reset, Q = exit.
 echo Capture 20 varied views before pressing SPACE.
-echo CPU calculation: 2 x 8 threads for mono cameras, then 16 threads for stereo.
+echo CPU calculation: up to 16 logical threads, limited by available CPU cores.
 echo.
 
 "%PYTHON%" calibration_program\full_calibrate_v2.py --left-camera 0 --right-camera 1

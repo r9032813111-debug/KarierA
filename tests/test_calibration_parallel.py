@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import sys
 import threading
 import unittest
@@ -17,10 +18,15 @@ import stereo_calibrate_v2 as stereo  # noqa: E402
 
 
 class CalibrationParallelTests(unittest.TestCase):
-    def test_complete_16_logical_cpu_budget_is_enabled(self) -> None:
-        self.assertEqual(mono.OPENCV_WORKER_THREADS, 16)
-        self.assertEqual(stereo.OPENCV_WORKER_THREADS, 16)
-        self.assertEqual(mono.MONO_PARALLEL_JOBS * mono.MONO_THREADS_PER_JOB, 16)
+    def test_cpu_budget_respects_config_and_available_cores(self) -> None:
+        available = os.cpu_count() or mono.CONFIG.CPU_THREADS
+        expected = max(1, min(mono.CONFIG.CPU_THREADS, available))
+        self.assertEqual(mono.OPENCV_WORKER_THREADS, expected)
+        self.assertEqual(stereo.OPENCV_WORKER_THREADS, expected)
+        self.assertEqual(
+            mono.MONO_THREADS_PER_JOB,
+            max(1, expected // mono.MONO_PARALLEL_JOBS),
+        )
 
     def test_left_and_right_mono_solves_really_overlap(self) -> None:
         session = object.__new__(mono.UnifiedStereoSession)
